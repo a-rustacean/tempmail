@@ -1,8 +1,12 @@
 [package]
 name = "tempmail"
 version = "0.1.0"
+description = "Simplify temporary email management and interaction, including message retrieval and attachment downloads."
 authors = ["Dilshad <dilshadplayingminecraft@outlook.com>"]
 edition = "2021"
+lisence = "MIT"
+documentation = "https://docs.rs/tempmail"
+repository = "https://github.com/a-rustacean/tempmail"
 
 [dependencies]
 chrono = "0.4.26"
