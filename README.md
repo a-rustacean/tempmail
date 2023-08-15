@@ -1,6 +1,6 @@
 # Tempmail
 
-The Tempmail Rust Library simplifies temporary email management and interaction, including message retrieval and attachment downloads, using the Rust programming language.
+The Tempmail simplifies temporary email management and interaction, including message retrieval and attachment downloads, using the Rust programming language.
 
 ## Features
 

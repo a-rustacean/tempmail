@@ -30,4 +30,4 @@ If you have questions or feedback, please feel free to open an issue on the [Git
 
 By contributing to this project, you agree that your contributions will be licensed under the [MIT License](LICENSE).
 
-Thank you for contributing to the Tempmail Rust Library!
+Thank you for contributing to the Tempmail!
