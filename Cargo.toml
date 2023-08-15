@@ -1,6 +1,6 @@
 [package]
 name = "tempmail"
-version = "0.1.0"
+version = "0.2.0"
 description = "Simplify temporary email management and interaction, including message retrieval and attachment downloads."
 authors = ["Dilshad <dilshadplayingminecraft@outlook.com>"]
 edition = "2021"
@@ -14,4 +14,3 @@ rand = "0.8.5"
 reqwest = "0.11.18"
 serde = { version = "1.0.183", features = ["derive"] }
 serde_json = "1.0.104"
-tokio = { version = "1.31.0", features = ["full"] }
