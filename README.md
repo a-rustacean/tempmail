@@ -54,4 +54,3 @@ This library is distributed under the terms of the MIT License. See [LICENSE](LI
 ## Contributing
 
 Contributions are welcome! Please check out the [contribution guidelines](CONTRIBUTING.md) before getting started.
-
