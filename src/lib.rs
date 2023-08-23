@@ -42,12 +42,13 @@
 use chrono::prelude::*;
 use rand::distributions::Alphanumeric;
 use rand::{thread_rng, Rng};
-use reqwest::IntoUrl;
 use serde::{Deserialize, Deserializer};
 use std::{error::Error, fmt::Display};
 
+const API_URL: &str = "https://www.1secmail.com/api/v1/";
+
 /// Represents an attachment associated with an email message.
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 pub struct TempmailAttachment {
     /// The filename of the attachment.
     pub filename: String,
@@ -59,7 +60,7 @@ pub struct TempmailAttachment {
 }
 
 /// Represents an email message received in the temporary email inbox.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct TempmailMessage {
     /// The unique identifier of the message.
     pub id: usize,
@@ -87,7 +88,7 @@ struct TempmailMessageRaw {
 }
 
 /// Enum representing different temporary email domains.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Domain {
     /// Domain "1secmail.com"
     SecMailCom,
@@ -106,7 +107,7 @@ pub enum Domain {
 }
 
 /// Represents a temporary email address with associated domain for receiving emails.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Tempmail {
     /// The username part of the email address.
     pub username: String,
@@ -197,6 +198,12 @@ impl Display for Domain {
     }
 }
 
+impl Default for Domain {
+    fn default() -> Self {
+        Self::SecMailCom
+    }
+}
+
 impl Display for TempmailError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
@@ -208,13 +215,13 @@ impl Display for TempmailError {
 
 impl Error for TempmailError {}
 
-/// A helper function to perform a JSON GET request and deserialize the response.
-async fn reqjson<U, T>(url: U) -> TempmailResult<T>
+// A helper function to perform a JSON GET request and deserialize the response.
+async fn reqjson<T, R>(query: T) -> TempmailResult<R>
 where
-    U: IntoUrl,
-    T: for<'de> serde::Deserialize<'de>,
+    T: AsRef<str>,
+    R: for<'de> serde::Deserialize<'de>,
 {
-    match reqwest::get(url).await {
+    match reqwest::get(format!("{}?{}", API_URL, query.as_ref())).await {
         Ok(response) => {
             let text = response
                 .text()
@@ -226,7 +233,7 @@ where
     }
 }
 
-/// A helper functon for generating a random string of the specified length.
+// A helper functon for generating a random string of the specified length.
 fn generate_random_string(length: usize) -> String {
     let rng = thread_rng();
     let random_string: String = rng
@@ -245,7 +252,7 @@ impl Tempmail {
     {
         Self {
             username: username.into(),
-            domain: domain.unwrap_or(Domain::SecMailCom),
+            domain: domain.unwrap_or_default(),
         }
     }
 
@@ -262,7 +269,7 @@ impl Tempmail {
     /// Fetches the messages in the inbox.
     pub async fn get_messages(&self) -> TempmailResult<Vec<TempmailMessage>> {
         let raw_messages: Vec<TempmailMessageRaw> = reqjson(format!(
-            "https://www.1secmail.com/api/v1/?action=getMessages&login={}&domain={}",
+            "action=getMessages&login={}&domain={}",
             self.username, self.domain
         ))
         .await?;
@@ -271,7 +278,7 @@ impl Tempmail {
 
         for raw_message in raw_messages {
             let mut message: TempmailMessage = reqjson(format!(
-                "https://www.1secmail.com/api/v1/?action=readMessage&login={}&domain={}&id={}",
+                "action=readMessage&login={}&domain={}&id={}",
                 self.username, self.domain, raw_message.id
             ))
             .await?;
@@ -294,7 +301,7 @@ impl Tempmail {
         T: AsRef<str>,
     {
         reqwest::get(format!(
-            "https://www.1secmail.com/api/v1/?action=download&login={}&domain={}&id={}&file={}",
+            "action=download&login={}&domain={}&id={}&file={}",
             self.username,
             self.domain,
             message_id,
@@ -308,3 +315,16 @@ impl Tempmail {
         .map(|bytes| bytes.to_vec())
     }
 }
+
+// `Send` and `Sync` trait implementations for public structs
+
+unsafe impl Send for Domain {}
+unsafe impl Sync for Domain {}
+unsafe impl Send for Tempmail {}
+unsafe impl Sync for Tempmail {}
+unsafe impl Send for TempmailError {}
+unsafe impl Sync for TempmailError {}
+unsafe impl Send for TempmailMessage {}
+unsafe impl Sync for TempmailMessage {}
+unsafe impl Send for TempmailAttachment {}
+unsafe impl Sync for TempmailAttachment {}
