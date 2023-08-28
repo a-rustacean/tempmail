@@ -40,10 +40,14 @@
 //! Refer to the documentation for individual struct and enum definitions for more details.
 
 use chrono::prelude::*;
-use rand::distributions::Alphanumeric;
-use rand::{thread_rng, Rng};
 use serde::{Deserialize, Deserializer};
 use std::{error::Error, fmt::Display};
+
+#[cfg(not(target_arch = "wasm32"))]
+use rand::{thread_rng, Rng};
+
+#[cfg(target_arch = "wasm32")]
+use js_sys::Math;
 
 const API_URL: &str = "https://www.1secmail.com/api/v1/";
 
@@ -115,7 +119,6 @@ pub struct Tempmail {
     pub domain: Domain,
 }
 
-/// Enum representing various errors that can occur while interacting with the Tempmail library.
 #[derive(Debug)]
 pub enum TempmailError {
     /// Error occurred while fetching data from a URL.
@@ -178,8 +181,7 @@ impl Domain {
     ];
 
     pub fn random() -> Self {
-        let mut rng = thread_rng();
-        let index = rng.gen_range(0..Self::DOMAINS.len());
+        let index = (random() * Self::DOMAINS.len() as f64).round() as usize;
         Self::DOMAINS[index].clone()
     }
 }
@@ -219,7 +221,7 @@ impl Error for TempmailError {}
 async fn reqjson<T, R>(query: T) -> TempmailResult<R>
 where
     T: AsRef<str>,
-    R: for<'de> serde::Deserialize<'de>,
+    R: for<'de> Deserialize<'de>,
 {
     match reqwest::get(format!("{}?{}", API_URL, query.as_ref())).await {
         Ok(response) => {
@@ -233,14 +235,29 @@ where
     }
 }
 
-// A helper functon for generating a random string of the specified length.
+#[cfg(not(target_arch = "wasm32"))]
+fn random() -> f64 {
+    let mut rng = thread_rng();
+    rng.gen_range(0.0..1.0)
+}
+
+#[cfg(target_arch = "wasm32")]
+fn random() -> f64 {
+    Math::random()
+}
+
 fn generate_random_string(length: usize) -> String {
-    let rng = thread_rng();
-    let random_string: String = rng
-        .sample_iter(Alphanumeric)
-        .take(length)
-        .map(char::from)
+    let mut random_string = String::with_capacity(length);
+
+    let characters: Vec<char> = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        .chars()
         .collect();
+
+    for _ in 0..length {
+        let random_index = (random() * characters.len() as f64) as usize;
+        random_string.push(characters[random_index]);
+    }
+
     random_string
 }
 
@@ -258,8 +275,7 @@ impl Tempmail {
 
     /// Creates a new instance of the Tempmail struct with random username and domain
     pub fn random() -> Self {
-        let mut rng = thread_rng();
-        let len = rng.gen_range(10..50);
+        let len = (10.0 + random() * 40.0).floor() as usize;
         let username = generate_random_string(len);
         let domain = Domain::random();
 

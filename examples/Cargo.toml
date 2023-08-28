@@ -1,0 +1,19 @@
+[package]
+name = "examples"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+# If you copy one of the examples into a new project, you should be using
+# [dependencies] instead, and delete the **path**.
+[dev-dependencies]
+tempmail = { path = "../" }
+tokio = { version = "1.32.0", features = ["full"] }
+
+[[example]]
+name = "custom_email"
+path = "custom_email.rs"
+
+[[example]]
+name = "random_email"
+path = "random_email.rs"
