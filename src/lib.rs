@@ -2,8 +2,9 @@
 //!
 //! A Rust library for interacting with temporary email services.
 //!
-//! This library provides functionality to manage temporary email addresses, retrieve messages,
-//! and download attachments using various temporary email domains.
+//! This library provides functionality to manage temporary email addresses,
+//! retrieve messages, and download attachments using various temporary email
+//! domains.
 //!
 //! # Example
 //!
@@ -33,11 +34,13 @@
 //! }
 //! ```
 //!
-//! The Tempmail library allows you to create a temporary email address, retrieve messages from the inbox,
-//! and download attachments associated with messages.
+//! The Tempmail library allows you to create a temporary email address,
+//! retrieve messages from the inbox, and download attachments associated with
+//! messages.
 //!
-//! The library defines several data structures, enums, and methods to facilitate these interactions.
-//! Refer to the documentation for individual struct and enum definitions for more details.
+//! The library defines several data structures, enums, and methods to
+//! facilitate these interactions. Refer to the documentation for individual
+//! struct and enum definitions for more details.
 
 use chrono::prelude::*;
 use serde::{Deserialize, Deserializer};
@@ -110,7 +113,8 @@ pub enum Domain {
     YoggmCom,
 }
 
-/// Represents a temporary email address with associated domain for receiving emails.
+/// Represents a temporary email address with associated domain for receiving
+/// emails.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Tempmail {
     /// The username part of the email address.
@@ -273,7 +277,8 @@ impl Tempmail {
         }
     }
 
-    /// Creates a new instance of the Tempmail struct with random username and domain
+    /// Creates a new instance of the Tempmail struct with random username and
+    /// domain
     pub fn random() -> Self {
         let len = (10.0 + random() * 40.0).floor() as usize;
         let username = generate_random_string(len);

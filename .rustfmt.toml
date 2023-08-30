@@ -1,0 +1,7 @@
+hard_tabs = false
+max_width = 100
+imports_granularity = "Crate"
+reorder_imports = true
+newline_style = "Unix"
+comment_width = 100
+wrap_comments = true
