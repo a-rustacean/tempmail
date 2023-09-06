@@ -56,7 +56,7 @@ const API_URL: &str = "https://www.1secmail.com/api/v1/";
 
 /// Represents an attachment associated with an email message.
 #[derive(Debug, Clone, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
-pub struct TempmailAttachment {
+pub struct Attachment {
     /// The filename of the attachment.
     pub filename: String,
     /// The MIME content type of the attachment.
@@ -68,7 +68,7 @@ pub struct TempmailAttachment {
 
 /// Represents an email message received in the temporary email inbox.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
-pub struct TempmailMessage {
+pub struct Message {
     /// The unique identifier of the message.
     pub id: usize,
     /// The sender's email address.
@@ -78,7 +78,7 @@ pub struct TempmailMessage {
     /// The timestamp when the email was received.
     pub timestamp: DateTime<Utc>,
     /// A vector of `TempmailAttachment` representing attachments in the email.
-    pub attachments: Vec<TempmailAttachment>,
+    pub attachments: Vec<Attachment>,
     /// The full body of the email, including both text and HTML content.
     pub body: String,
     /// The text-only content of the email body.
@@ -88,10 +88,16 @@ pub struct TempmailMessage {
 }
 
 /// Represents a raw version of an email message with minimal information.
-#[derive(Debug, Clone, Deserialize)]
-struct TempmailMessageRaw {
+#[derive(Debug, Clone)]
+pub struct RawMessage {
     /// The unique identifier of the message.
     pub id: usize,
+    /// The sender's email address
+    pub from: String,
+    /// The subject of the mail
+    pub subject: String,
+    /// The timestamp when the email was received
+    pub timestamp: DateTime<Utc>,
 }
 
 /// Enum representing different temporary email domains.
@@ -129,13 +135,13 @@ pub type TempmailError = reqwest::Error;
 pub type TempmailResult<T> = Result<T, TempmailError>;
 
 #[derive(Deserialize)]
-struct TempmailMessageWrapper {
+struct MessageWrapper {
     id: usize,
     from: String,
     subject: String,
     #[serde(rename = "date")]
     timestamp: String,
-    attachments: Vec<TempmailAttachment>,
+    attachments: Vec<Attachment>,
     body: String,
     #[serde(rename = "textBody")]
     text_body: String,
@@ -143,18 +149,27 @@ struct TempmailMessageWrapper {
     html_body: Option<String>,
 }
 
-impl<'de> Deserialize<'de> for TempmailMessage {
+#[derive(Deserialize)]
+struct RawMessageWrapper {
+    id: usize,
+    from: String,
+    subject: String,
+    #[serde(rename = "date")]
+    timestamp: String,
+}
+
+impl<'de> Deserialize<'de> for Message {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: Deserializer<'de>,
     {
-        let wrapper: TempmailMessageWrapper = Deserialize::deserialize(deserializer)?;
+        let wrapper: MessageWrapper = Deserialize::deserialize(deserializer)?;
 
         let timestamp = NaiveDateTime::parse_from_str(&wrapper.timestamp, "%Y-%m-%d %H:%M:%S")
             .map(|ndt| DateTime::<Utc>::from_utc(ndt, Utc))
             .map_err(serde::de::Error::custom)?;
 
-        Ok(TempmailMessage {
+        Ok(Message {
             id: wrapper.id,
             from: wrapper.from,
             subject: wrapper.subject,
@@ -167,6 +182,25 @@ impl<'de> Deserialize<'de> for TempmailMessage {
     }
 }
 
+impl<'de> Deserialize<'de> for RawMessage {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let wrapper: RawMessageWrapper = Deserialize::deserialize(deserializer)?;
+
+        let timestamp = NaiveDateTime::parse_from_str(&wrapper.timestamp, "%Y-%m-%d %H:%M:%S")
+            .map(|ndt| DateTime::<Utc>::from_utc(ndt, Utc))
+            .map_err(serde::de::Error::custom)?;
+
+        Ok(RawMessage {
+            id: wrapper.id,
+            from: wrapper.from,
+            subject: wrapper.subject,
+            timestamp,
+        })
+    }
+}
 impl Domain {
     const DOMAINS: [Domain; 7] = [
         Domain::SecMailCom,
@@ -265,8 +299,8 @@ impl Tempmail {
     }
 
     /// Fetches the messages in the inbox.
-    pub async fn get_messages(&self) -> TempmailResult<Vec<TempmailMessage>> {
-        let raw_messages: Vec<TempmailMessageRaw> = reqjson(format!(
+    pub async fn get_messages(&self) -> TempmailResult<Vec<Message>> {
+        let raw_messages: Vec<RawMessage> = reqjson(format!(
             "action=getMessages&login={}&domain={}",
             self.username, self.domain
         ))
@@ -275,7 +309,7 @@ impl Tempmail {
         let mut messages = Vec::new();
 
         for raw_message in raw_messages {
-            let mut message: TempmailMessage = reqjson(format!(
+            let mut message: Message = reqjson(format!(
                 "action=readMessage&login={}&domain={}&id={}",
                 self.username, self.domain, raw_message.id
             ))
@@ -291,6 +325,30 @@ impl Tempmail {
         }
 
         Ok(messages)
+    }
+
+    pub async fn get_raw_messages(&self) -> TempmailResult<Vec<RawMessage>> {
+        reqjson(format!(
+            "action=getMessages&login={}&domain={}",
+            self.username, self.domain
+        ))
+        .await
+    }
+
+    pub async fn expand_raw_message(&self, raw_message: &RawMessage) -> TempmailResult<Message> {
+        let mut message: Message = reqjson(format!(
+            "action=readMessage&login={}&domain={}&id={}",
+            self.username, self.domain, raw_message.id
+        ))
+        .await?;
+
+        if let Some(html_body) = message.html_body.clone() {
+            if html_body.is_empty() {
+                message.html_body = None;
+            }
+        }
+
+        Ok(message)
     }
 
     /// Fetches the attachment of the specified message_id and filename.
@@ -316,9 +374,11 @@ impl Tempmail {
 
 unsafe impl Send for Domain {}
 unsafe impl Sync for Domain {}
+unsafe impl Send for Message {}
+unsafe impl Sync for Message {}
 unsafe impl Send for Tempmail {}
 unsafe impl Sync for Tempmail {}
-unsafe impl Send for TempmailMessage {}
-unsafe impl Sync for TempmailMessage {}
-unsafe impl Send for TempmailAttachment {}
-unsafe impl Sync for TempmailAttachment {}
+unsafe impl Send for Attachment {}
+unsafe impl Sync for Attachment {}
+unsafe impl Send for RawMessage {}
+unsafe impl Sync for RawMessage {}
