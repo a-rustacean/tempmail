@@ -44,7 +44,7 @@
 
 use chrono::prelude::*;
 use serde::{Deserialize, Deserializer};
-use std::{error::Error, fmt::Display};
+use std::fmt::Display;
 
 #[cfg(not(target_arch = "wasm32"))]
 use rand::{thread_rng, Rng};
@@ -123,13 +123,7 @@ pub struct Tempmail {
     pub domain: Domain,
 }
 
-#[derive(Debug)]
-pub enum TempmailError {
-    /// Error occurred while fetching data from a URL.
-    FetchingError(reqwest::Error),
-    /// Error occurred while parsing JSON data.
-    ParsingError(serde_json::Error),
-}
+pub type TempmailError = reqwest::Error;
 
 /// A type alias for `Result` with `TempmailError` as the error type.
 pub type TempmailResult<T> = Result<T, TempmailError>;
@@ -210,33 +204,16 @@ impl Default for Domain {
     }
 }
 
-impl Display for TempmailError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::FetchingError(err) => f.write_str(&format!("FetchingError({})", err)),
-            Self::ParsingError(err) => f.write_str(&format!("ParsingError({})", err)),
-        }
-    }
-}
-
-impl Error for TempmailError {}
-
 // A helper function to perform a JSON GET request and deserialize the response.
 async fn reqjson<T, R>(query: T) -> TempmailResult<R>
 where
     T: AsRef<str>,
     R: for<'de> Deserialize<'de>,
 {
-    match reqwest::get(format!("{}?{}", API_URL, query.as_ref())).await {
-        Ok(response) => {
-            let text = response
-                .text()
-                .await
-                .map_err(TempmailError::FetchingError)?;
-            serde_json::from_str(&text).map_err(TempmailError::ParsingError)
-        }
-        Err(err) => Err(TempmailError::FetchingError(err)),
-    }
+    reqwest::get(format!("{}?{}", API_URL, query.as_ref()))
+        .await?
+        .json()
+        .await
 }
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -328,12 +305,10 @@ impl Tempmail {
             message_id,
             filename.as_ref()
         ))
-        .await
-        .map_err(TempmailError::FetchingError)?
+        .await?
         .bytes()
         .await
-        .map_err(TempmailError::FetchingError)
-        .map(|bytes| bytes.to_vec())
+        .map(|b| b.to_vec())
     }
 }
 
@@ -343,8 +318,6 @@ unsafe impl Send for Domain {}
 unsafe impl Sync for Domain {}
 unsafe impl Send for Tempmail {}
 unsafe impl Sync for Tempmail {}
-unsafe impl Send for TempmailError {}
-unsafe impl Sync for TempmailError {}
 unsafe impl Send for TempmailMessage {}
 unsafe impl Sync for TempmailMessage {}
 unsafe impl Send for TempmailAttachment {}
