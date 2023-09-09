@@ -1,6 +1,6 @@
 [package]
 name = "tempmail"
-version = "0.2.2"
+version = "0.2.3"
 description = "Simplify temporary email management and interaction, including message retrieval and attachment downloads."
 authors = ["Dilshad <dilshadplayingminecraft@outlook.com>"]
 edition = "2021"
