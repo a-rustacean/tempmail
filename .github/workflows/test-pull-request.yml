@@ -1,0 +1,25 @@
+name: Test pull request
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - run: |
+          cargo +nightly clippy -Z unstable-options -- -D warnings
+          cargo test --verbose
+
