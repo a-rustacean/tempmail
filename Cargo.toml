@@ -7,6 +7,8 @@ edition = "2021"
 license = "MIT"
 documentation = "https://docs.rs/tempmail"
 repository = "https://github.com/a-rustacean/tempmail"
+categories = ["email", "api", "tempmail"]
+keywords = ["tempmail", "api", "email", "1secmail", "wrapper"]
 
 [dependencies]
 chrono = "0.4.26"
