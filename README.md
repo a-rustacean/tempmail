@@ -26,9 +26,17 @@ async fn main() {
     match messages {
         Ok(messages) => {
             for message in messages {
+                println!("Id: {}", message.id);
                 println!("From: {}", message.from);
                 println!("Subject: {}", message.subject);
                 println!("Timestamp: {}", message.timestamp);
+                println!("Attachments:");
+                for attachment in message.attachments {
+                    println!("  Filename: {}", attachment.filename);
+                    println!("  ContentType: {}", attachment.content_type);
+                    println!("  Size: {}", attachment.size);
+                }
+                println!("Body: {}", message.body);
             }
         }
         Err(error) => {
@@ -44,7 +52,7 @@ To use this library in your project, simply add the following to your `Cargo.tom
 
 ```toml
 [dependencies]
-tempmail = "0.2.3"
+tempmail = "0.2.4"
 ```
 
 ## License
