@@ -1,6 +1,6 @@
 ## Examples of how to use Tempamail
 
-This directory cotains some examples showcasing various capabilities of
+This directory contains some examples showcasing various capabilities of
 the `tempmail` crate.
 
 All examples can be executed with:
