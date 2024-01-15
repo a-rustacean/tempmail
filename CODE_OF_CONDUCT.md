@@ -21,7 +21,7 @@ Unacceptable behaviors include, but are not limited to:
 
 ## Reporting Incidents
 
-If you experience or witness behavior that violates this Code of Conduct, please report it by contacting the project maintainers at [dilshadplayingminecraft@outlook.com](mailto:dilshadplayingminecraft@outlook.com). All reports will be kept confidential.
+If you experience or witness behavior that violates this Code of Conduct, please report it by contacting the project maintainers at [a-rustacean@outlook.com](mailto:a-rustacean@outlook.com). All reports will be kept confidential.
 
 ## Enforcement
 

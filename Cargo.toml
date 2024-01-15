@@ -2,7 +2,7 @@
 name = "tempmail"
 version = "0.2.4"
 description = "Simplify temporary email management and interaction, including message retrieval and attachment downloads."
-authors = ["Dilshad <dilshadplayingminecraft@outlook.com>"]
+authors = ["Dilshad <a-rustacean@outlook.com>"]
 edition = "2021"
 license = "MIT"
 documentation = "https://docs.rs/tempmail"
