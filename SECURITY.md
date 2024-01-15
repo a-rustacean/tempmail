@@ -16,4 +16,4 @@ This is a list of versions currently being supported with security updates.
 ## Reporting a Vulnerability
 
 If you find a security vulnerability don't open a issue,
-mail me personally [dilshadplayingminecraft@outlook.com](mailto:dilshadplayingminecraft@outlook.com)
+mail me personally [a-rustacean@outlook.com](mailto:a-rustacean@outlook.com)
