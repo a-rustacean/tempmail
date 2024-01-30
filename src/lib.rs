@@ -357,7 +357,8 @@ impl Tempmail {
         T: AsRef<str>,
     {
         reqwest::get(format!(
-            "action=download&login={}&domain={}&id={}&file={}",
+            "{}?action=download&login={}&domain={}&id={}&file={}",
+            API_URL,
             self.username,
             self.domain,
             message_id,
