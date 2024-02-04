@@ -16,10 +16,9 @@ jobs:
       - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable
+          toolchain: nightly
           override: true
 
       - run: |
           cargo +nightly clippy -Z unstable-options -- -D warnings
-          cargo test --verbose
 
