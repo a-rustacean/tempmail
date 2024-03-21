@@ -10,6 +10,7 @@ name          = "tempmail"
 repository    = "https://github.com/a-rustacean/tempmail"
 rust-version  = "1.64"
 version       = "0.2.4"
+exclude       = ["examples"]
 
 [lib]
 crate-type = ["cdylib", "rlib"]
