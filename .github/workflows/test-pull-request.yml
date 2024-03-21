@@ -13,12 +13,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Install stable toolchain
-        uses: actions-rs/toolchain@v1
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: nightly
-          override: true
-
-      - run: |
-          cargo +nightly clippy -Z unstable-options -- -D warnings
-
+          components: clippy
+          
+      - name: Lint
+        run: cargo +nightly clippy -Z unstable-options -- -D warnings
