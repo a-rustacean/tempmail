@@ -166,7 +166,7 @@ impl<'de> Deserialize<'de> for Message {
         let wrapper: MessageWrapper = Deserialize::deserialize(deserializer)?;
 
         let timestamp = NaiveDateTime::parse_from_str(&wrapper.timestamp, "%Y-%m-%d %H:%M:%S")
-            .map(|ndt| DateTime::<Utc>::from_utc(ndt, Utc))
+            .map(|ndt| Utc.from_utc_datetime(&ndt))
             .map_err(serde::de::Error::custom)?;
 
         Ok(Message {
@@ -190,7 +190,7 @@ impl<'de> Deserialize<'de> for RawMessage {
         let wrapper: RawMessageWrapper = Deserialize::deserialize(deserializer)?;
 
         let timestamp = NaiveDateTime::parse_from_str(&wrapper.timestamp, "%Y-%m-%d %H:%M:%S")
-            .map(|ndt| DateTime::<Utc>::from_utc(ndt, Utc))
+            .map(|ndt| Utc.from_utc_datetime(&ndt))
             .map_err(serde::de::Error::custom)?;
 
         Ok(RawMessage {
