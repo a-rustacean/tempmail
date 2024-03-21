@@ -9,6 +9,7 @@ license       = "MIT"
 name          = "tempmail"
 repository    = "https://github.com/a-rustacean/tempmail"
 version       = "0.2.4"
+rust-version  = "1.64"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
