@@ -9,7 +9,7 @@ license       = "MIT"
 name          = "tempmail"
 repository    = "https://github.com/a-rustacean/tempmail"
 rust-version  = "1.64"
-version       = "0.2.4"
+version       = "1.0.0"
 exclude       = ["examples"]
 
 [lib]
