@@ -8,7 +8,7 @@ version = "0.0.0"
 # [dependencies] instead, and delete the **path**.
 [dev-dependencies]
 tempmail = { path = "../" }
-tokio    = { version = "1.32.0", features = ["full"] }
+tokio    = { version = "1.32", features = ["full"] }
 
 [[example]]
 name = "custom_email"
