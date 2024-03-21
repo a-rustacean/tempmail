@@ -1,6 +1,6 @@
 [package]
 authors       = ["Dilshad <a-rustacean@outlook.com>"]
-categories    = ["email", "api", "tempmail"]
+categories    = ["email", "api-bindings"]
 description   = "Simplify temporary email management and interaction, including message retrieval and attachment downloads."
 documentation = "https://docs.rs/tempmail"
 edition       = "2021"
