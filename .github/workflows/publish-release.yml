@@ -4,6 +4,10 @@ on:
   release:
     types: [created]
 
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: "full"
+
 jobs:
   publish:
     name: Publish
