@@ -42,15 +42,14 @@
 //! facilitate these interactions. Refer to the documentation for individual
 //! struct and enum definitions for more details.
 
-use chrono::prelude::*;
-use serde::{Deserialize, Deserializer};
 use std::fmt::Display;
 
-#[cfg(not(target_arch = "wasm32"))]
-use rand::{thread_rng, Rng};
-
+use chrono::prelude::*;
 #[cfg(target_arch = "wasm32")]
 use js_sys::Math;
+#[cfg(not(target_arch = "wasm32"))]
+use rand::{thread_rng, Rng};
+use serde::{Deserialize, Deserializer};
 
 const API_URL: &str = "https://www.1secmail.com/api/v1/";
 
@@ -165,9 +164,12 @@ impl<'de> Deserialize<'de> for Message {
     {
         let wrapper: MessageWrapper = Deserialize::deserialize(deserializer)?;
 
-        let timestamp = NaiveDateTime::parse_from_str(&wrapper.timestamp, "%Y-%m-%d %H:%M:%S")
-            .map(|ndt| Utc.from_utc_datetime(&ndt))
-            .map_err(serde::de::Error::custom)?;
+        let timestamp = NaiveDateTime::parse_from_str(
+            &wrapper.timestamp,
+            "%Y-%m-%d %H:%M:%S",
+        )
+        .map(|ndt| Utc.from_utc_datetime(&ndt))
+        .map_err(serde::de::Error::custom)?;
 
         Ok(Message {
             id: wrapper.id,
@@ -187,11 +189,15 @@ impl<'de> Deserialize<'de> for RawMessage {
     where
         D: Deserializer<'de>,
     {
-        let wrapper: RawMessageWrapper = Deserialize::deserialize(deserializer)?;
+        let wrapper: RawMessageWrapper =
+            Deserialize::deserialize(deserializer)?;
 
-        let timestamp = NaiveDateTime::parse_from_str(&wrapper.timestamp, "%Y-%m-%d %H:%M:%S")
-            .map(|ndt| Utc.from_utc_datetime(&ndt))
-            .map_err(serde::de::Error::custom)?;
+        let timestamp = NaiveDateTime::parse_from_str(
+            &wrapper.timestamp,
+            "%Y-%m-%d %H:%M:%S",
+        )
+        .map(|ndt| Utc.from_utc_datetime(&ndt))
+        .map_err(serde::de::Error::custom)?;
 
         Ok(RawMessage {
             id: wrapper.id,
@@ -244,10 +250,7 @@ where
     T: AsRef<str>,
     R: for<'de> Deserialize<'de>,
 {
-    reqwest::get(format!("{}?{}", API_URL, query.as_ref()))
-        .await?
-        .json()
-        .await
+    reqwest::get(format!("{}?{}", API_URL, query.as_ref())).await?.json().await
 }
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -264,9 +267,10 @@ fn random() -> f64 {
 fn generate_random_string(length: usize) -> String {
     let mut random_string = String::with_capacity(length);
 
-    let characters: Vec<char> = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-        .chars()
-        .collect();
+    let characters: Vec<char> =
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+            .chars()
+            .collect();
 
     for _ in 0..length {
         let random_index = (random() * characters.len() as f64) as usize;
@@ -282,10 +286,7 @@ impl Tempmail {
     where
         U: Into<String>,
     {
-        Self {
-            username: username.into(),
-            domain: domain.unwrap_or_default(),
-        }
+        Self { username: username.into(), domain: domain.unwrap_or_default() }
     }
 
     /// Creates a new instance of the Tempmail struct with random username and
@@ -335,7 +336,10 @@ impl Tempmail {
         .await
     }
 
-    pub async fn expand_raw_message(&self, raw_message: &RawMessage) -> TempmailResult<Message> {
+    pub async fn expand_raw_message(
+        &self,
+        raw_message: &RawMessage,
+    ) -> TempmailResult<Message> {
         let mut message: Message = reqjson(format!(
             "action=readMessage&login={}&domain={}&id={}",
             self.username, self.domain, raw_message.id
@@ -352,7 +356,11 @@ impl Tempmail {
     }
 
     /// Fetches the attachment of the specified message_id and filename.
-    pub async fn get_attachment<T>(&self, message_id: usize, filename: T) -> TempmailResult<Vec<u8>>
+    pub async fn get_attachment<T>(
+        &self,
+        message_id: usize,
+        filename: T,
+    ) -> TempmailResult<Vec<u8>>
     where
         T: AsRef<str>,
     {

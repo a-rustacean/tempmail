@@ -3,7 +3,8 @@ use tempmail::{Domain, Tempmail};
 #[tokio::main]
 async fn main() {
     // Create a new Tempmail instance with a custom username and domain
-    let tempmail = Tempmail::new("customEmailAddress", Some(Domain::SecMailNet));
+    let tempmail =
+        Tempmail::new("customEmailAddress", Some(Domain::SecMailNet));
 
     let messages = tempmail.get_messages().await;
 
