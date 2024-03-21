@@ -57,7 +57,7 @@ To use this library in your project, simply add the following to your `Cargo.tom
 
 ```toml
 [dependencies]
-tempmail = "0.2.4"
+tempmail = "1.0.0"
 ```
 
 ## License
