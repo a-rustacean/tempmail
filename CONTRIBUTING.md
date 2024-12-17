@@ -12,7 +12,7 @@ This project adheres to the [Open Source Code of Conduct](CODE_OF_CONDUCT.md). B
 2. Make your changes, improvements, or bug fixes.
 3. Write appropriate tests for your changes if applicable.
 4. Ensure your code passes the existing tests and linting checks.
-5. Submit a pull request (PR) to the `master` branch.
+5. Submit a pull request (PR) to the `main` branch.
 
 ## Pull Request Guidelines
 
