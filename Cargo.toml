@@ -26,3 +26,6 @@ rand = "0.8"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 js-sys = "0.3"
+
+[dev-dependencies]
+tokio    = { version = "1.32", features = ["full"] }
