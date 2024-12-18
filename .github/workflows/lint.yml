@@ -2,7 +2,7 @@ name: Lint and Check Formatting
 
 on:
   push:
-    branches: [master]
+    branches: [main]
 
 env:
   CARGO_TERM_COLOR: always
