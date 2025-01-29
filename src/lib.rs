@@ -48,7 +48,7 @@ use chrono::prelude::*;
 #[cfg(target_arch = "wasm32")]
 use js_sys::Math;
 #[cfg(not(target_arch = "wasm32"))]
-use rand::{thread_rng, Rng};
+use rand::{rng, Rng};
 use serde::{Deserialize, Deserializer};
 
 const API_URL: &str = "https://www.1secmail.com/api/v1/";
@@ -255,8 +255,8 @@ where
 
 #[cfg(not(target_arch = "wasm32"))]
 fn random() -> f64 {
-    let mut rng = thread_rng();
-    rng.gen_range(0.0..1.0)
+    let mut rng = rng();
+    rng.random_range(0.0..1.0)
 }
 
 #[cfg(target_arch = "wasm32")]
