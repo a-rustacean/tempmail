@@ -100,9 +100,10 @@ pub struct RawMessage {
 }
 
 /// Enum representing different temporary email domains.
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Domain {
     /// Domain "1secmail.com"
+    #[default]
     SecMailCom,
     /// Domain "1secmail.org"
     SecMailOrg,
@@ -235,12 +236,6 @@ impl Display for Domain {
             Domain::XojxeCom => f.write_str("xojxe.com"),
             Domain::YoggmCom => f.write_str("yoggm.com"),
         }
-    }
-}
-
-impl Default for Domain {
-    fn default() -> Self {
-        Self::SecMailCom
     }
 }
 
