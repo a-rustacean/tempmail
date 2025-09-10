@@ -8,7 +8,7 @@ keywords      = ["tempmail", "api", "email", "1secmail", "wrapper"]
 license       = "MIT"
 name          = "tempmail"
 repository    = "https://github.com/a-rustacean/tempmail"
-rust-version  = "1.64"
+rust-version  = "1.70"
 version       = "1.0.1"
 exclude       = ["examples"]
 
