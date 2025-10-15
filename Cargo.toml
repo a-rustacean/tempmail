@@ -28,4 +28,4 @@ rand = "0.9"
 js-sys = "0.3"
 
 [dev-dependencies]
-tokio    = { version = "1.47", features = ["full"] }
+tokio    = { version = "1.48", features = ["full"] }
